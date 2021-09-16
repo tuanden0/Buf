@@ -8,6 +8,7 @@ protoc-gen-go-grpc
 protoc-gen-grpc-gateway
 protoc-gen-validate
 protoc-gen-openapiv2
+protoc-gen-gofast
 ```
 
 ## What is buf?

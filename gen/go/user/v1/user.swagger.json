@@ -5,18 +5,16 @@
     "version": "1.0",
     "contact": {
       "name": "tuanden0",
-      "url": "https://github.com/tuanden0/Buf",
-      "email": ""
-    },
-    "license": {
-      "name": "BSD 3-Clause License",
-      "url": "https://github.com/grpc-ecosystem/grpc-gateway/blob/master/LICENSE.txt"
+      "url": "https://github.com/tuanden0/Buf"
     }
   },
   "tags": [
     {
       "name": "UserService"
     }
+  ],
+  "schemes": [
+    "https"
   ],
   "consumes": [
     "application/json"
@@ -205,11 +203,14 @@
     "protobufAny": {
       "type": "object",
       "properties": {
-        "@type": {
+        "typeUrl": {
           "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
         }
-      },
-      "additionalProperties": {}
+      }
     },
     "rpcStatus": {
       "type": "object",
@@ -392,5 +393,9 @@
         }
       }
     }
+  },
+  "externalDocs": {
+    "description": "gRPC example repository",
+    "url": "https://github.com/gogo/grpc-example"
   }
 }

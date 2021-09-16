@@ -7,8 +7,9 @@ managed:
       - buf.build/googleapis/googleapis
       - buf.build/envoyproxy/protoc-gen-validate
       - buf.build/grpc-ecosystem/grpc-gateway
+      - buf.build/gogo/protobuf
 plugins:
-  - name: go
+  - name: gofast
     out: gen/go
     opt: paths=source_relative
   - name: go-grpc

@@ -5,22 +5,28 @@ package user.v1;
 import "validate/validate.proto";
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
+import "gogoproto/gogo.proto";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
-	info: {
-		title: "User Service";
+  info: {
+    title: "User Service";
 		version: "1.0";
 		contact: {
 			name: "tuanden0";
 			url: "https://github.com/tuanden0/Buf";
 			email: "";
 		};
-		license: {
-			name: "BSD 3-Clause License";
-			url: "https://github.com/grpc-ecosystem/grpc-gateway/blob/master/LICENSE.txt";
-		};
+  };
+  external_docs: {
+    url: "https://github.com/gogo/grpc-example";
+    description: "gRPC example repository";
   }
+  schemes: HTTPS;
 };
+
+option (gogoproto.gostring_all) = true;
+option (gogoproto.goproto_stringer_all) = false;
+option (gogoproto.stringer_all) =  true;
 
 service UserService {
   rpc Create(CreateRequest) returns (CreateResponse) {
@@ -70,10 +76,13 @@ message Sort {
 }
 
 message CreateRequest {
-  string username = 1;
-  string password = 2;
-  string email = 3;
-  string role = 4;
+  string username = 1 [(gogoproto.moretags) = "validate:\"required\""];
+  string password = 2 [(gogoproto.moretags) = "validate:\"required\""];
+  string email = 3 [
+    (validate.rules).string.email = true,
+    (gogoproto.moretags) = "validate:\"required,email\""
+  ];
+  string role = 4 [(gogoproto.moretags) = "validate:\"role\""];
 }
 
 message CreateResponse { 

@@ -9,6 +9,13 @@ deps:
     digest: b1-BJUoAjBMVXaIMUNFJ5kdGr-be0QDwhDSTEDQpoxXzys=
     create_time: 2021-08-20T15:05:15.02577Z
   - remote: buf.build
+    owner: gogo
+    repository: protobuf
+    branch: main
+    commit: 4df00b267f944190a229ce3695781e99
+    digest: b1-sjLgsg7CzrkOrIjBDh3s-l0aMjE6oqTj85-OsoopKAw=
+    create_time: 2021-08-10T00:14:28.345069Z
+  - remote: buf.build
     owner: googleapis
     repository: googleapis
     branch: main

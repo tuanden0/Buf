@@ -22,7 +22,7 @@ func run() error {
 	connectTo := "127.0.0.1:8080"
 	conn, err := grpc.Dial(connectTo, grpc.WithBlock(), grpc.WithInsecure())
 	if err != nil {
-		return fmt.Errorf("failed to connect to PetStoreService on %s: %w", connectTo, err)
+		return fmt.Errorf("failed to connect to UserService on %s: %w", connectTo, err)
 	}
 	log.Println("Connected to", connectTo)
 
@@ -30,14 +30,15 @@ func run() error {
 	u, err := userClient.Create(context.Background(), &userv1.CreateRequest{
 		Username: "test",
 		Password: "123123",
-		Email:    "test@local.com",
+		Email:    "test",
 		Role:     "user",
 	})
 
 	if err != nil {
-		return fmt.Errorf("failed to PutPet: %w", err)
+
+		return fmt.Errorf("server validate error: %v", err)
 	}
 
-	log.Println("Successfully Create", u)
+	log.Println("successfully Create", u)
 	return nil
 }
