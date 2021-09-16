@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package user.v1;
+
+import "validate/validate.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+	info: {
+		title: "User Service";
+		version: "1.0";
+		contact: {
+			name: "tuanden0";
+			url: "https://github.com/tuanden0/Buf";
+			email: "";
+		};
+		license: {
+			name: "BSD 3-Clause License";
+			url: "https://github.com/grpc-ecosystem/grpc-gateway/blob/master/LICENSE.txt";
+		};
+  }
+};
+
+service UserService {
+  rpc Create(CreateRequest) returns (CreateResponse) {
+    option (google.api.http) = {
+      post : "/v1/user"
+      body : "*"
+    };
+  }
+  rpc Retrieve(RetrieveRequest) returns (RetrieveResponse) {
+    option (google.api.http) = {
+      get : "/v1/user/{id}"
+    };
+  }
+  rpc Update(UpdateRequest) returns (UpdateResponse) {
+    option (google.api.http) = {
+      patch : "/v1/user/{id}"
+      body : "*"
+    };
+  }
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {
+    option (google.api.http) = {
+      delete : "/v1/user/{id}"
+    };
+  }
+  rpc List(ListRequest) returns (ListResponse) {
+    option (google.api.http) = {
+      post : "/v1/users"
+      body : "*"
+    };
+  }
+}
+
+message Pagination {
+  uint32 limit = 1 [(validate.rules).uint32.gt = 0];
+  uint32 page = 2;
+}
+
+message Filter {
+  string key = 1;
+  string value = 2;
+  string method = 3;
+}
+
+message Sort {
+  string key = 1;
+  bool is_asc = 2;
+}
+
+message CreateRequest {
+  string username = 1;
+  string password = 2;
+  string email = 3;
+  string role = 4;
+}
+
+message CreateResponse { 
+  uint32 id = 1;
+  string username = 2;
+  string email = 3;
+  string role = 4;
+}
+
+message RetrieveRequest { uint32 id = 1; }
+
+message RetrieveResponse {
+  uint32 id = 1;
+  string username = 2;
+  string email = 3;
+  string role = 4;
+}
+
+message UpdateRequest {
+  uint32 id = 1;
+  string username = 2;
+  string password = 3;
+  string email = 4;
+  string role = 5;
+}
+
+message UpdateResponse {
+  uint32 id = 1;
+  string username = 2;
+  string email = 3;
+  string role = 4;
+}
+
+message DeleteRequest { uint32 id = 1; }
+
+message DeleteResponse { string message = 1; }
+
+message ListRequest {
+  Pagination pagination = 1;
+  repeated Filter filters = 2;
+  Sort sort = 3;
+}
+
+message User {
+  uint32 id = 1;
+  string username = 2;
+  string email = 3;
+  string role = 4;
+}
+
+message ListResponse { repeated User users = 1; }
