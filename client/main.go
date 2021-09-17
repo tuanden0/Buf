@@ -9,7 +9,9 @@ import (
 	// and the gen/proto/go output location in the buf.gen.yaml.
 	userv1 "buf/gen/go/user/v1"
 
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 )
 
 func main() {
@@ -28,13 +30,24 @@ func run() error {
 
 	userClient := userv1.NewUserServiceClient(conn)
 	u, err := userClient.Create(context.Background(), &userv1.CreateRequest{
-		Username: "test",
-		Password: "123123",
+		Username: "",
+		Password: "",
 		Email:    "test",
-		Role:     "user",
+		Role:     "admin",
 	})
 
 	if err != nil {
+		if e, ok := status.FromError(err); ok {
+			for _, detail := range e.Details() {
+				switch t := detail.(type) {
+				case *errdetails.BadRequest:
+					for _, violation := range t.GetFieldViolations() {
+						fmt.Printf("The %q field was wrong:\n", violation.GetField())
+						fmt.Printf("\t%s\n", violation.GetDescription())
+					}
+				}
+			}
+		}
 
 		return fmt.Errorf("server validate error: %v", err)
 	}

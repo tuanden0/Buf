@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"reflect"
+	"strings"
 
 	// This import path is based on the name declaration in the go.mod,
 	// and the gen/proto/go output location in the buf.gen.yaml.
@@ -14,6 +16,7 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	en_translations "github.com/go-playground/validator/v10/translations/en"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -92,6 +95,15 @@ func (u *userServiceServer) Create(ctx context.Context, in *userv1.CreateRequest
 		return t
 	})
 
+	// Get lower-case field name
+	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+		if name == "-" {
+			return ""
+		}
+		return name
+	})
+
 	// Register custom valdiate function
 	validate.RegisterValidation("role", validateRole)
 
@@ -100,7 +112,30 @@ func (u *userServiceServer) Create(ctx context.Context, in *userv1.CreateRequest
 	if err != nil {
 		errs := err.(validator.ValidationErrors)
 		// Return first error, not all error
-		return nil, status.Error(codes.InvalidArgument, errs[0].Translate(trans))
+
+		// Create new status
+		// https://cloud.google.com/apis/design/errors
+		// https://jbrandhorst.com/post/grpc-errors/
+		st := status.New(codes.InvalidArgument, "invalid input")
+
+		// Create a bad request detail
+		br := &errdetails.BadRequest{}
+
+		for _, e := range errs {
+			v := &errdetails.BadRequest_FieldViolation{
+				Field:       e.Field(),
+				Description: e.Translate(trans),
+			}
+			br.FieldViolations = append(br.FieldViolations, v)
+		}
+
+		st, err = st.WithDetails(br)
+		if err != nil {
+			panic(fmt.Sprintf("Unexpected error attaching metadata: %v", err))
+		}
+
+		return nil, st.Err()
+		// return nil, status.Error(codes.InvalidArgument, errs[0].Translate(trans))
 	}
 
 	// This validate generate by protoc-gen-validate

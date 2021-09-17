@@ -173,4 +173,45 @@ directories:
 
 ## Take note
 
-buf is deprecated v1beta1 and use v1 as their recommend
+buf is deprecated v1beta1 and recommend to use v1 version
+
+## How to validate Protobuf struct?
+
+My main purpose that I want to learn how to inject my own tags (using buf.build and gogoproto) and validate it with my custom validate function implement from validator v10 libary.
+
+I use google error models to return multiple error to client.
+
+### All knowledge gathred from internet: [Google errors](https://cloud.google.com/apis/design/errors), [Advanced gRPC Error Usage](https://jbrandhorst.com/post/grpc-errors/), [gRPC-Gateway Error Handler](https://mycodesmells.com/post/grpc-gateway-error-handler), [Input validation in GoLang](https://medium.com/@apzuk3/input-validation-in-golang-bc24cdec1835)
+
+### How validate look from gRPC client?
+
+```bash
+λ go run client\main.go
+2021/09/17 14:44:13 Connected to 127.0.0.1:8080
+The "username" field was wrong:
+        Username is a required field
+The "password" field was wrong:
+        Password is a required field
+The "email" field was wrong:
+        email must be a valid email!
+The "role" field was wrong:
+        role only accept 'user' value!
+2021/09/17 14:44:13 server validate error: rpc error: code = InvalidArgument desc = invalid input
+exit status 1
+```
+
+### How validate look from HTTP client?
+
+```bash
+HTTP.status=400
+{
+    "code": 3,
+    "message": "invalid input",
+    "details": {
+        "email": "Email is a required field",
+        "password": "Password is a required field",
+        "role": "role only accept 'user' value!",
+        "username": "Username is a required field"
+    }
+}
+```
